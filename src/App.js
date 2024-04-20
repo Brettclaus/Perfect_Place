@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, LayersControl } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import data from './data.json';
@@ -11,6 +11,8 @@ const dotIcon = new L.Icon({
   iconSize: [12, 12],
   iconAnchor: [6, 6],
 });
+
+const { BaseLayer, Overlay } = LayersControl;
 
 const App = () => {
   const [housingCostActive, setHousingCostActive] = useState(true);
@@ -58,10 +60,17 @@ const App = () => {
 
   return (
     <div style={{ position: 'relative', height: '100vh' }}>
-      <div className="filter-container" style={{ position: 'absolute', top: '20px', right: '20px', backgroundColor: 'white', padding: '20px', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)', zIndex: '1000' }}>
+      {/* Title Container */}
+      <div className="title-container" style={{ position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)', backgroundColor: 'white', padding: '5px', borderRadius: '10px', boxShadow: '10px 10px 10px rgba(0, 0, 0, 0.1)', zIndex: '1000' }}>
         <header>
           <h1>Perfect Place</h1>
-          <p>Find your place</p>
+        </header>
+      </div>
+
+      {/* Filter Container */}
+      <div className="filter-container" style={{ position: 'absolute', top: '20px', right: '20px', backgroundColor: 'white', padding: '20px', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)', zIndex: '1000' }}>
+        <header>
+          <h4>change your range, find your place...  </h4>
         </header>
         <div>
           <label style={{ width: '150px' }}>Housing Cost</label>
@@ -99,7 +108,7 @@ const App = () => {
           <input type="checkbox" checked={daysOfSunActive} onChange={() => setDaysOfSunActive(!daysOfSunActive)} />
         </div>
         <div>
-          <label style={{ width: '150px' }}>Average Inches of Rain</label>
+          <label style={{ width: '250px' }}>Average Inches of Rain</label>
           <label style={{ width: '250px' }}>Range: {inchesOfRainRange[0]} - {inchesOfRainRange[1]}</label>
           <input type="range" min="0" max="150" value={inchesOfRainRange[0]} onChange={(e) => setInchesOfRainRange([parseFloat(e.target.value), inchesOfRainRange[1]])} />
           <input type="range" min="0" max="150" value={inchesOfRainRange[1]} onChange={(e) => setInchesOfRainRange([inchesOfRainRange[0], parseFloat(e.target.value)])} />
@@ -107,7 +116,23 @@ const App = () => {
         </div>
       </div>
       <MapContainer center={[37.0902, -95.7129]} zoom={5} style={{ height: '100%', width: '100%', position: 'absolute', top: '0', left: '0' }}>
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <LayersControl position="topleft">
+          <BaseLayer checked name="OpenStreetMap">
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          </BaseLayer>
+          <BaseLayer name="OpenTopoMap">
+            <TileLayer url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png" />
+          </BaseLayer>
+          <BaseLayer name="Google Maps">
+            <TileLayer url="https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}" />
+          </BaseLayer>
+          <BaseLayer name="OpenStreetMap HOT">
+            <TileLayer url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png" />
+          </BaseLayer>
+          <BaseLayer name="Esri Street Map">
+            <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}" />
+          </BaseLayer>
+        </LayersControl>
         {markers.map((marker, index) => (
           <Marker
             key={index}

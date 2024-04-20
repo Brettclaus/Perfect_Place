@@ -1,0 +1,35 @@
+/* Filter container styles */
+.filter-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+/* Label styles */
+.filter-container label {
+  width: 100px; /* Adjust the width as needed */
+  display: block;
+}
+
+/* Slider container styles */
+.filter-container .slider-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Slider group styles */
+.filter-container .slider-group {
+  margin-bottom: 10px; /* Adjust spacing between slider groups */
+}
+
+/* Slider label and input styles */
+.filter-container .slider-group label,
+.filter-container .slider-group input[type="range"] {
+  display: block;
+  margin-bottom: 5px; /* Adjust spacing between label and slider */
+}

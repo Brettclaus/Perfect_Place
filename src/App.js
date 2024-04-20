@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import data from './data.json';
+import './FilterContainer.css';
 
 // Define a custom marker icon
 const dotIcon = new L.Icon({
@@ -12,41 +13,40 @@ const dotIcon = new L.Icon({
 });
 
 const App = () => {
-  const [minHousingCost, setMinHousingCost] = useState(0);
-  const [maxHousingCost, setMaxHousingCost] = useState(100000);
-  const [minFoodCost, setMinFoodCost] = useState(0);
-  const [maxFoodCost, setMaxFoodCost] = useState(100000);
-  const [minIncome, setMinIncome] = useState(0);
-  const [maxIncome, setMaxIncome] = useState(1000000);
-  const [minTaxRate, setMinTaxRate] = useState(0);
-  const [maxTaxRate, setMaxTaxRate] = useState(20);
-  const [minDaysOfSun, setMinDaysOfSun] = useState(0);
-  const [maxDaysOfSun, setMaxDaysOfSun] = useState(365);
-  const [minInchesOfRain, setMinInchesOfRain] = useState(0);
-  const [maxInchesOfRain, setMaxInchesOfRain] = useState(1000);
+  const [housingCostActive, setHousingCostActive] = useState(true);
+  const [foodCostActive, setFoodCostActive] = useState(true);
+  const [incomeActive, setIncomeActive] = useState(true);
+  const [taxRateActive, setTaxRateActive] = useState(true);
+  const [daysOfSunActive, setDaysOfSunActive] = useState(true);
+  const [inchesOfRainActive, setInchesOfRainActive] = useState(true);
+  const [housingCostRange, setHousingCostRange] = useState([3000, 40000]);
+  const [foodCostRange, setFoodCostRange] = useState([5000, 16000]);
+  const [incomeRange, setIncomeRange] = useState([30000, 160000]);
+  const [taxRateRange, setTaxRateRange] = useState([4, 20]);
+  const [daysOfSunRange, setDaysOfSunRange] = useState([0, 365]);
+  const [inchesOfRainRange, setInchesOfRainRange] = useState([0, 150]);
   const [markers, setMarkers] = useState([]);
 
   const filterMarkers = () => {
     const filteredMarkers = data.filter(marker => {
       const latitude = parseFloat(marker.latitude);
       const longitude = parseFloat(marker.longitude);
-
+  
       return (
-        !isNaN(latitude) && !isNaN(longitude) &&
-        latitude >= -90 && latitude <= 90 &&
-        longitude >= -180 && longitude <= 180 &&
-        parseFloat(marker["Average of housing_cost"]) >= minHousingCost &&
-        parseFloat(marker["Average of housing_cost"]) <= maxHousingCost &&
-        parseFloat(marker["Average of food_cost"]) >= minFoodCost &&
-        parseFloat(marker["Average of food_cost"]) <= maxFoodCost &&
-        parseFloat(marker["Average of median_family_income"]) >= minIncome &&
-        parseFloat(marker["Average of median_family_income"]) <= maxIncome &&
-        parseFloat(marker["Average of total_tax_rate"]) >= minTaxRate &&
-        parseFloat(marker["Average of total_tax_rate"]) <= maxTaxRate &&
-        parseInt(marker["Days of Sun"]) >= minDaysOfSun &&
-        parseInt(marker["Days of Sun"]) <= maxDaysOfSun &&
-        parseFloat(marker["Inches of Rain"]) >= minInchesOfRain &&
-        parseFloat(marker["Inches of Rain"]) <= maxInchesOfRain
+        !isNaN(latitude) &&
+        !isNaN(longitude) &&
+        latitude >= -90 &&
+        latitude <= 90 &&
+        longitude >= -180 &&
+        longitude <= 180 &&
+        (
+          (!housingCostActive || (parseFloat(marker["Average of housing_cost"]) >= housingCostRange[0] && parseFloat(marker["Average of housing_cost"]) <= housingCostRange[1])) &&
+          (!foodCostActive || (parseFloat(marker["Average of food_cost"]) >= foodCostRange[0] && parseFloat(marker["Average of food_cost"]) <= foodCostRange[1])) &&
+          (!incomeActive || (parseFloat(marker["Average of median_family_income"]) >= incomeRange[0] && parseFloat(marker["Average of median_family_income"]) <= incomeRange[1])) &&
+          (!taxRateActive || (parseFloat(marker["Average of total_tax_rate"]) >= taxRateRange[0] && parseFloat(marker["Average of total_tax_rate"]) <= taxRateRange[1])) &&
+          (!daysOfSunActive || (parseInt(marker["Days of Sun"]) >= daysOfSunRange[0] && parseInt(marker["Days of Sun"]) <= daysOfSunRange[1])) &&
+          (!inchesOfRainActive || (parseFloat(marker["Inches of Rain"]) >= inchesOfRainRange[0] && parseFloat(marker["Inches of Rain"]) <= inchesOfRainRange[1]))
+        )
       );
     });
     setMarkers(filteredMarkers);
@@ -54,47 +54,59 @@ const App = () => {
 
   useEffect(() => {
     filterMarkers();
-  }, [minHousingCost, maxHousingCost, minFoodCost, maxFoodCost, minIncome, maxIncome, minTaxRate, maxTaxRate, minDaysOfSun, maxDaysOfSun, minInchesOfRain, maxInchesOfRain]);
+  }, [housingCostActive, foodCostActive, incomeActive, taxRateActive, daysOfSunActive, inchesOfRainActive, housingCostRange, foodCostRange, incomeRange, taxRateRange, daysOfSunRange, inchesOfRainRange]);
 
   return (
-    <div>
-      <div>
-        <label>Min Housing Cost: {minHousingCost}</label>
-        <input type="range" min="0" max="10000" value={minHousingCost} onChange={(e) => setMinHousingCost(parseFloat(e.target.value))} />
-        <label>Max Housing Cost: {maxHousingCost}</label>
-        <input type="range" min="0" max="10000" value={maxHousingCost} onChange={(e) => setMaxHousingCost(parseFloat(e.target.value))} />
+    <div style={{ position: 'relative', height: '100vh' }}>
+      <div className="filter-container" style={{ position: 'absolute', top: '20px', right: '20px', backgroundColor: 'white', padding: '20px', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)', zIndex: '1000' }}>
+        <header>
+          <h1>Perfect Place</h1>
+          <p>Find your place</p>
+        </header>
+        <div>
+          <label style={{ width: '150px' }}>Housing Cost</label>
+          <label style={{ width: '250px' }}>Range: {housingCostRange[0]} - {housingCostRange[1]}</label>
+          <input type="range" min="3000" max="40000" value={housingCostRange[0]} onChange={(e) => setHousingCostRange([parseFloat(e.target.value), housingCostRange[1]])} />
+          <input type="range" min="3000" max="40000" value={housingCostRange[1]} onChange={(e) => setHousingCostRange([housingCostRange[0], parseFloat(e.target.value)])} />
+          <input type="checkbox" checked={housingCostActive} onChange={() => setHousingCostActive(!housingCostActive)} />
+        </div>
+        <div>
+          <label style={{ width: '150px' }}>Food Cost</label>
+          <label style={{ width: '250px' }}>Range: {foodCostRange[0]} - {foodCostRange[1]}</label>
+          <input type="range" min="5000" max="16000" value={foodCostRange[0]} onChange={(e) => setFoodCostRange([parseFloat(e.target.value), foodCostRange[1]])} />
+          <input type="range" min="5000" max="16000" value={foodCostRange[1]} onChange={(e) => setFoodCostRange([foodCostRange[0], parseFloat(e.target.value)])} />
+          <input type="checkbox" checked={foodCostActive} onChange={() => setFoodCostActive(!foodCostActive)} />
+        </div>
+        <div>
+          <label style={{ width: '150px' }}>Average Income</label>
+          <label style={{ width: '250px' }}>Range: {incomeRange[0]} - {incomeRange[1]}</label>
+          <input type="range" min="30000" max="160000" value={incomeRange[0]} onChange={(e) => setIncomeRange([parseFloat(e.target.value), incomeRange[1]])} />
+          <input type="range" min="30000" max="160000" value={incomeRange[1]} onChange={(e) => setIncomeRange([incomeRange[0], parseFloat(e.target.value)])} />
+          <input type="checkbox" checked={incomeActive} onChange={() => setIncomeActive(!incomeActive)} />
+        </div>
+        <div>
+          <label style={{ width: '150px' }}>Average Tax Rate</label>
+          <label style={{ width: '250px' }}>Range: {taxRateRange[0]} - {taxRateRange[1]}</label>
+          <input type="range" min="4" max="20" value={taxRateRange[0]} onChange={(e) => setTaxRateRange([parseFloat(e.target.value), taxRateRange[1]])} />
+          <input type="range" min="4" max="20" value={taxRateRange[1]} onChange={(e) => setTaxRateRange([taxRateRange[0], parseFloat(e.target.value)])} />
+          <input type="checkbox" checked={taxRateActive} onChange={() => setTaxRateActive(!taxRateActive)} />
+        </div>
+        <div>
+          <label style={{ width: '150px' }}>Average Days of Sun</label>
+          <label style={{ width: '250px' }}>Range: {daysOfSunRange[0]} - {daysOfSunRange[1]}</label>
+          <input type="range" min="0" max="365" value={daysOfSunRange[0]} onChange={(e) => setDaysOfSunRange([parseInt(e.target.value), daysOfSunRange[1]])} />
+          <input type="range" min="0" max="365" value={daysOfSunRange[1]} onChange={(e) => setDaysOfSunRange([daysOfSunRange[0], parseInt(e.target.value)])} />
+          <input type="checkbox" checked={daysOfSunActive} onChange={() => setDaysOfSunActive(!daysOfSunActive)} />
+        </div>
+        <div>
+          <label style={{ width: '150px' }}>Average Inches of Rain</label>
+          <label style={{ width: '250px' }}>Range: {inchesOfRainRange[0]} - {inchesOfRainRange[1]}</label>
+          <input type="range" min="0" max="150" value={inchesOfRainRange[0]} onChange={(e) => setInchesOfRainRange([parseFloat(e.target.value), inchesOfRainRange[1]])} />
+          <input type="range" min="0" max="150" value={inchesOfRainRange[1]} onChange={(e) => setInchesOfRainRange([inchesOfRainRange[0], parseFloat(e.target.value)])} />
+          <input type="checkbox" checked={inchesOfRainActive} onChange={() => setInchesOfRainActive(!inchesOfRainActive)} />
+        </div>
       </div>
-      <div>
-        <label>Min Food Cost: {minFoodCost}</label>
-        <input type="range" min="0" max="10000" value={minFoodCost} onChange={(e) => setMinFoodCost(parseFloat(e.target.value))} />
-        <label>Max Food Cost: {maxFoodCost}</label>
-        <input type="range" min="0" max="10000" value={maxFoodCost} onChange={(e) => setMaxFoodCost(parseFloat(e.target.value))} />
-      </div>
-      <div>
-        <label>Min Income: {minIncome}</label>
-        <input type="range" min="0" max="100000" value={minIncome} onChange={(e) => setMinIncome(parseFloat(e.target.value))} />
-        <label>Max Income: {maxIncome}</label>
-        <input type="range" min="0" max="100000" value={maxIncome} onChange={(e) => setMaxIncome(parseFloat(e.target.value))} />
-      </div>
-      <div>
-        <label>Min Tax Rate: {minTaxRate}</label>
-        <input type="range" min="0" max="20" value={minTaxRate} onChange={(e) => setMinTaxRate(parseFloat(e.target.value))} />
-        <label>Max Tax Rate: {maxTaxRate}</label>
-        <input type="range" min="0" max="20" value={maxTaxRate} onChange={(e) => setMaxTaxRate(parseFloat(e.target.value))} />
-      </div>
-      <div>
-        <label>Min Days of Sun: {minDaysOfSun}</label>
-        <input type="range" min="0" max="365" value={minDaysOfSun} onChange={(e) => setMinDaysOfSun(parseInt(e.target.value))} />
-        <label>Max Days of Sun: {maxDaysOfSun}</label>
-        <input type="range" min="0" max="365" value={maxDaysOfSun} onChange={(e) => setMaxDaysOfSun(parseInt(e.target.value))} />
-      </div>
-      <div>
-        <label>Min Inches of Rain: {minInchesOfRain}</label>
-        <input type="range" min="0" max="100" value={minInchesOfRain} onChange={(e) => setMinInchesOfRain(parseFloat(e.target.value))} />
-        <label>Max Inches of Rain: {maxInchesOfRain}</label>
-        <input type="range" min="0" max="100" value={maxInchesOfRain} onChange={(e) => setMaxInchesOfRain(parseFloat(e.target.value))} />
-      </div>
-      <MapContainer center={[37.0902, -95.7129]} zoom={5} style={{ height: '500px', width: '100%' }}>
+      <MapContainer center={[37.0902, -95.7129]} zoom={5} style={{ height: '100%', width: '100%', position: 'absolute', top: '0', left: '0' }}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         {markers.map((marker, index) => (
           <Marker

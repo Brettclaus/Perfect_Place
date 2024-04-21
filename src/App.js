@@ -3,7 +3,9 @@ import { MapContainer, TileLayer, Marker, Popup, LayersControl } from 'react-lea
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import data from './data.json';
+import NavigationBar from './NavigationBar';
 import './FilterContainer.css';
+import './NavigationBar.css';
 
 // Define a custom marker icon
 const dotIcon = new L.Icon({
@@ -28,6 +30,9 @@ const App = () => {
   const [daysOfSunRange, setDaysOfSunRange] = useState([0, 365]);
   const [inchesOfRainRange, setInchesOfRainRange] = useState([0, 150]);
   const [markers, setMarkers] = useState([]);
+  const [selectedCounty, setSelectedCounty] = useState(null); // Add selectedCounty state variable
+  const [showAnalytics, setShowAnalytics] = useState(false); // Add state for showing analytics container
+
 
   const filterMarkers = () => {
     const filteredMarkers = data.filter(marker => {
@@ -58,6 +63,14 @@ const App = () => {
     filterMarkers();
   }, [housingCostActive, foodCostActive, incomeActive, taxRateActive, daysOfSunActive, inchesOfRainActive, housingCostRange, foodCostRange, incomeRange, taxRateRange, daysOfSunRange, inchesOfRainRange]);
 
+  const handleMarkerClick = (county) => {
+    setSelectedCounty(county);
+  };
+
+  const handleAnalyticsClose = () => {
+    setShowAnalytics(false); // Hide the analytics container
+  };
+
   return (
     <div style={{ position: 'relative', height: '100vh' }}>
       {/* Title Container
@@ -66,7 +79,8 @@ const App = () => {
           <h1>Perfect Place</h1>
         </header>
       </div> */}
-
+      {/* Navigation Bar */}
+      <NavigationBar />
       {/* Filter Container */}
       <div className="filter-container" style={{ position: 'absolute', top: '20px', right: '20px', backgroundColor: 'white', padding: '20px', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)', zIndex: '1000' }}>
         <header>
@@ -116,7 +130,7 @@ const App = () => {
           <input type="checkbox" checked={inchesOfRainActive} onChange={() => setInchesOfRainActive(!inchesOfRainActive)} />
         </div>
       </div>
-      <MapContainer center={[37.0902, -95.7129]} zoom={5} style={{ height: '100%', width: '100%', position: 'absolute', top: '0', left: '0' }}>
+      <MapContainer center={[37.0902, -95.7129]} zoom={5} style={{ height: 'calc(100% - 10px)', width: '100%', position: 'absolute', top: '0', left: '0' }}>
         <LayersControl position="topleft">
           <BaseLayer checked name="OpenStreetMap">
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
@@ -139,6 +153,8 @@ const App = () => {
             key={index}
             position={[marker.latitude, marker.longitude]}
             icon={dotIcon}
+            eventHandlers={{ click: () => handleMarkerClick(marker) }} // Add event handler for marker click
+
           >
             <Popup>
               <h3>{marker.County}, {marker.State}</h3>
@@ -149,10 +165,22 @@ const App = () => {
               <p>Days of Sun: {marker["Days of Sun"]}</p>
               <p>Inches of Rain: {marker["Inches of Rain"]}</p>
               <p>{marker["ChatGPT_Info"]}</p>
+              {/* Add link to open analytics container */}
+              <a href="#" onClick={() =>     setShowAnalytics(true) // Show the analytics container
+                }>View Analytics</a>
+ 
             </Popup>
           </Marker>
         ))}
       </MapContainer>
+      {/* Analytics container */}
+      {showAnalytics && (
+        <div className="analytics-container">
+          <h3>{selectedCounty ? `${selectedCounty.County}, ${selectedCounty.State}` : "Analytics"}</h3>
+          {/* Add analytics content here */}
+          <button onClick={handleAnalyticsClose}>Close</button>
+        </div>
+      )}
     </div>
   );
 };

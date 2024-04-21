@@ -60,16 +60,17 @@ const App = () => {
 
   return (
     <div style={{ position: 'relative', height: '100vh' }}>
-      {/* Title Container */}
+      {/* Title Container
       <div className="title-container" style={{ position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)', backgroundColor: 'white', padding: '5px', borderRadius: '10px', boxShadow: '10px 10px 10px rgba(0, 0, 0, 0.1)', zIndex: '1000' }}>
         <header>
           <h1>Perfect Place</h1>
         </header>
-      </div>
+      </div> */}
 
       {/* Filter Container */}
       <div className="filter-container" style={{ position: 'absolute', top: '20px', right: '20px', backgroundColor: 'white', padding: '20px', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)', zIndex: '1000' }}>
         <header>
+          <h1> Perfect Place </h1>
           <h4>change your range, find your place...  </h4>
         </header>
         <div>

@@ -1,20 +1,41 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import intro from './Introduction';
 import perfectPlaceIcon from './perfect_place_icon.png';
 import backgroundImage from './background.png';
 
-const Homepage = () => {
+const ServicePage = () => {
+  const DCB = "DataChefBrett".split("");
+  const text = intro.text.split("");
   return (
     <div style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', minHeight: '100vh', padding: '5%' }}>
       <Navbar />
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start', marginTop: '5%', marginLeft: '5%' }}>
-        <h1 style={{ color: 'white', textAlign: 'left', fontSize: '4vw', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', textTransform: 'capitalize', letterSpacing: '2px', marginBottom: '5%' }}>DataChefBrett</h1>
-        {/* Placeholder feature */}
-        <div style={{ backgroundColor: 'rgba(255, 99, 71, 0.8)', padding: '5%', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)', marginBottom: '5%', width: '100%', textAlign: 'center' }}>
-          <h2 style={{ color: 'white', fontSize: '3vw', marginBottom: '2%' }}>Placeholder Feature</h2>
-          <p style={{ color: 'white', fontSize: '1.5vw' }}>This is a placeholder feature. You can replace it with your desired content.</p>
-        </div>
-        {/* End of Placeholder feature */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'left', justifyContent: 'left', marginTop: '5%', marginLeft: '5%' }}>
+        <h1 style={{ color: 'white', textAlign: 'left', fontSize: '4vw', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', textTransform: 'capitalize', letterSpacing: '2px', marginBottom: '5%' }}>
+          {DCB.map((char, index) => (
+            <motion.span
+              key={index}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: index * 0.3 }}
+            >
+              {char}
+            </motion.span>
+          ))}
+        </h1>
+        <p3 style={{ color: 'white', textAlign: 'left', fontSize: '2vw', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', textTransform: 'capitalize', letterSpacing: '2px', marginBottom: '5%' }}>
+          {text.map((char, index) => (
+            <motion.span
+              key={index}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: .5 }}
+              transition={{ duration: 3, delay: index * 0.01 }}
+            >
+              {char}
+            </motion.span>
+          ))}
+        </p3>
         <div style={{ backgroundColor: 'rgba(255, 99, 71, 0.8)', padding: '2%', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)', marginBottom: '5%', width: '50%', textAlign: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1%' }}>
             <img src={perfectPlaceIcon} alt="Perfect Place Icon" style={{ width: '3vw', marginRight: '1vw', borderRadius: '5px' }} />
@@ -56,4 +77,33 @@ const Navbar = () => {
   );
 };
 
-export default Homepage;
+const ServiceBox = ({ title, description }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    setExpanded(!expanded);
+  };
+
+  return (
+    <div style={{
+      marginBottom: '5%',
+      width: 'calc(40% - 5%)',
+      cursor: 'pointer',
+      borderRadius: '10px',
+    }} onClick={toggleExpand}>
+      <div style={{
+        padding: '2%',
+        margin: '2%',
+        border: '1px solid #ddd',
+        borderRadius: '10px',
+        backgroundColor: 'rgba(249, 249, 249, 0.8)',
+        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.2)',
+      }}>
+        <h3 style={{ color: '#333', fontSize: '2vw', marginBottom: '5%' }}>{title}</h3>
+        {expanded && <p style={{ color: '#666', fontSize: '1.5vw', lineHeight: '1.5' }}>{description}</p>}
+      </div>
+    </div>
+  );
+};
+
+export default ServicePage;

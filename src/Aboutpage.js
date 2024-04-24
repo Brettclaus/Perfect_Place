@@ -1,16 +1,29 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import perfectPlaceIcon from './perfect_place_icon.png';
 import backgroundImage from './background.png';
 
 const AboutPage = () => {
+  const text = "DataChefBrett".split("");
   return (
     <div style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', minHeight: '100vh', padding: '5%' }}>
       <Navbar />
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start', marginTop: '5%', marginLeft: '5%' }}>
-        <h1 style={{ color: 'white', textAlign: 'left', fontSize: '4vw', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', textTransform: 'capitalize', letterSpacing: '2px', marginBottom: '5%' }}>DataChefBrett</h1>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'left', justifyContent: 'left', marginTop: '5%', marginLeft: '5%' }}>
+        <h1 style={{ color: 'white', textAlign: 'left', fontSize: '4vw', fontFamily: 'Arial, sans-serif', fontWeight: 'bold', textTransform: 'capitalize', letterSpacing: '2px', marginBottom: '5%' }}>
+          {text.map((char, index) => (
+            <motion.span
+              key={index}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: index * 0.3 }}
+            >
+              {char}
+            </motion.span>
+          ))}
+        </h1>
         {/* Placeholder feature */}
-        <div style={{ backgroundColor: 'rgba(55, 99, 71, 0.6)', padding: '5%', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)', marginBottom: '5%', width: '100%', textAlign: 'center' }}>
+        <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)', padding: '5%', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)', marginBottom: '5%', width: '100%', textAlign: 'left', justifyContent: 'left' }}>
           <h2 style={{ color: 'white', fontSize: '3vw', marginBottom: '2%' }}>What We Do For You</h2>
           <p style={{ color: 'white', fontSize: '1.5vw' }}>Welcome to DataChefBrett.com, your trusted partner in restaurant consulting excellence. At DataChefBrett, we're more than just consultants — we're your dedicated team of industry experts committed to transforming your restaurant business through innovative solutions and strategic insights.
 
